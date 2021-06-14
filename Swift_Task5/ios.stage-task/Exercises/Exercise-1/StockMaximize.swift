@@ -2,38 +2,26 @@ import Foundation
 
 class StockMaximize {
 
-    func getAllCount(prices: [Int]) -> Int {
-        var profit = 0
-        for price in prices {
-            profit += prices.last! - price
-        }
-        return profit
-    }
     
     func countProfit(prices: [Int]) -> Int {
-        guard prices.count > 1 else {
-            return 0
-        }
-        
-        var profit = 0
-        var somePrices = [Int]()
-        somePrices.append(prices.first!)
-        
-        for index in 0...(prices.count-2) {
-            if prices[index] <= prices[index+1] {
-                somePrices.append(prices[index+1])
-            } else {
-                if somePrices.count > 1 {
-                    profit += getAllCount(prices: somePrices)
+            var profit = 0
+            var max = 0
+            
+            if prices.count > 0 {
+                for i in 1..<prices.count {
+                    if prices[i] >= prices[i-1] {
+                        for j in i..<prices.count {
+                            if prices[j] > prices[i] {
+                                max = prices[j]
+                            } else {
+                                max = prices[i]
+                            }
+                        }
+                        profit += max - prices[i-1]
+                    }
                 }
-                somePrices.removeAll()
-                somePrices.append(prices[index+1])
-                
             }
+
+            return profit
         }
-        if somePrices.count > 1 {
-            profit += getAllCount(prices: somePrices)
-        }
-        return profit
-    }
 }

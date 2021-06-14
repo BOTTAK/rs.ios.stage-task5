@@ -16,34 +16,45 @@ public final class Knapsack {
         self.foods = foods
     }
     
-    func getKnapsack(for array: [Supply]) -> [[Int]] {
-        var table: [[Int]] = Array(repeating: Array(repeating: 0, count: maxWeight+1), count: array.count+1)
-        for i in 0 ... array.count {
-            for j in 0 ... maxWeight {
-                if i != 0 && j != 0 {
-                    if (array[i - 1].weight > j){
-                        table[i][j] = table[i - 1][j]
+    func findMaxKilometres() -> Int {
+            let foodMatrix = getMatrix(maxWeight, foods.count, foods)
+            let drinkMatrix = getMatrix(maxWeight, drinks.count, drinks)
+            
+            var maximumDistance = 0
+            for i in 1...maxWeight {
+                let currentFoodVariation = foodMatrix[foods.count][i]
+                let currentDrinkVariation = drinkMatrix[drinks.count][maxWeight-i] 
+                
+                if min(currentFoodVariation, currentDrinkVariation) > maximumDistance {
+                    maximumDistance = min(currentFoodVariation, currentDrinkVariation)
+                }
+            }
+            
+            return maximumDistance
+        }
+
+
+        func getMatrix (_ maxWeight: Int, _ numberOfElements: Int, _ array: [Supply]) -> [[Int]] {
+            var profits = [0]
+            var weights = [0]
+            for i in 0..<array.count {
+                profits.append(array[i].value)
+                weights.append(array[i].weight)
+            }
+            
+            var matrix = Array(repeating: Array(repeating: 0, count: maxWeight + 1), count: profits.count)
+            
+            for i in 1...numberOfElements {
+                for w in 1...maxWeight {
+                    if weights[i] <= w {
+                        matrix[i][w] = max((profits[i] + matrix[i-1][w-weights[i]]), matrix[i-1][w])
                     } else {
-                        table[i][j] = max(table[i - 1][j],
-                                          (array[i - 1].value + table[i - 1][j - array[i - 1].weight]))
+                        matrix[i][w] = matrix[i-1][w]
                     }
                 }
             }
+
+            
+            return matrix
         }
-        return table
-    }
-    
-    func findMaxKilometres() -> Int {
-        guard maxWeight <= 2500 && maxWeight > 0 else {
-            return 0
-        }
-        
-        let foodsKnapsack = self.getKnapsack(for: foods)
-        let drinksKnapsack = self.getKnapsack(for: drinks)
-        var maxDistance = 0
-        for i in 0...maxWeight {
-            maxDistance = max(maxDistance, min(foodsKnapsack[foods.count][i], drinksKnapsack[drinks.count][maxWeight-i]))
-        }
-        return maxDistance
-    }
 }
