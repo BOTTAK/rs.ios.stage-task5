@@ -2,7 +2,7 @@ import UIKit
 
 class MessageDecryptor: NSObject {
     
-    func decryptMessage(_ message: String) -> String {
+    func getDecryptMessage(_ message: String) -> String {
            var counts = [String]()
            var tempCount = ""
            var repeatString = [String]() 
